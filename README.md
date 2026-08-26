@@ -1,16 +1,30 @@
-# React + Vite
+# 🌾 CropGuard - Empowering Farmers with AI
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+![CropGuard Preview](./screenshot.png)
 
-Currently, two official plugins are available:
+**CropGuard** is a next-generation, AI-powered agricultural platform built for Hackathons. It provides real-time crop disease detection, microclimate weather alerts, and a direct communication channel between farmers, agricultural experts, and government officers.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 🚀 Live Demo
+[https://crop-guard-full-project.vercel.app](https://crop-guard-full-project.vercel.app)
 
-## React Compiler
+### ✨ Key Features
+- **AI Crop Scanner:** Detect 30+ crop diseases and pests instantly using the mobile camera.
+- **Multi-Lingual Support:** Accessible in English, Hindi, and Marathi for local farmers.
+- **Role-Based Dashboards:** Dedicated interfaces for Farmers, Experts, and Nodal Officers.
+- **Microclimate Risk Alerts:** Real-time weather warnings based on local parameters.
+- **PWA Ready:** Installable as a native app on Android and iOS devices.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🛠️ Tech Stack
+- **Frontend:** React.js, Vite, CSS3 (Glassmorphism UI)
+- **Icons:** Lucide-React
+- **Routing:** React Router DOM
+- **Deployment:** Vercel
 
-## Expanding the Oxlint configuration
+### ⚙️ How to Run Locally
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run dev`
+4. Open `http://localhost:5173` in your browser
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+*Built with ❤️ by Team Night Coders*
