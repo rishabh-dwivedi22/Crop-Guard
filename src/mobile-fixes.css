@@ -1,0 +1,43 @@
+/* ===== MOBILE SPECIFIC OVERRIDES FOR OVERFLOW ===== */
+.mobile-hide-text { display: inline; }
+
+@media (max-width: 600px) {
+  .mobile-hide-text { display: none !important; }
+  
+  /* Force flex containers to wrap on mobile so they don't cause horizontal scrolling */
+  .glass-card > div { flex-wrap: wrap !important; }
+  
+  .navbar {
+    padding: 0 10px !important;
+  }
+  
+  .nav-brand div {
+    font-size: 16px !important;
+  }
+  
+  /* Make role selector pill scrollable or smaller */
+  .nav-controls {
+    gap: 4px !important;
+  }
+  
+  .nav-controls button {
+    padding: 4px 6px !important;
+    font-size: 10px !important;
+  }
+  
+  .nav-controls .btn-icon {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  /* Fix ScanPage Dual Mode Buttons */
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Prevent horizontal scrolling entirely */
+  body {
+    overflow-x: hidden !important;
+    width: 100vw;
+  }
+}

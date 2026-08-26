@@ -1,0 +1,175 @@
+.weather-card {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+}
+
+.weather-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.weather-header h3 {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-condition {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.weather-condition-icon {
+  font-size: 1.5rem;
+  animation: weather-float 3s ease-in-out infinite;
+}
+
+@keyframes weather-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.weather-condition-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ── Metric grid ── */
+.weather-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.metric-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.metric-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.metric-icon.temp { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.metric-icon.humidity { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+.metric-icon.rain { background: rgba(99, 102, 241, 0.12); color: #6366f1; }
+.metric-icon.wind { background: rgba(14, 165, 233, 0.12); color: #0ea5e9; }
+
+.metric-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.metric-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ── Risk impact badge ── */
+.risk-impact-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.risk-impact-badge.low {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--primary-light);
+  border: 1px solid rgba(22, 163, 74, 0.25);
+}
+.risk-impact-badge.moderate {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--secondary);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+.risk-impact-badge.high {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+/* ── Forecast strip ── */
+.forecast-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.forecast-day {
+  flex: 1;
+  min-width: 60px;
+  text-align: center;
+  padding: 10px 6px;
+  border-radius: 10px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  transition: background 0.2s ease;
+}
+
+.forecast-day:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.forecast-day-name {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.forecast-day-icon {
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+
+.forecast-day-temp {
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
