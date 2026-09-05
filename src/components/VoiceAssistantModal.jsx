@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Mic, MicOff, Volume2, X, Sparkles, CheckCircle } from 'lucide-react';
-import diseases from '../data/diseases';
 import { useNavigate } from 'react-router-dom';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Initialize Gemini
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 const VoiceAssistantModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [diagnosedDisease, setDiagnosedDisease] = useState(null);
-  const [statusText, setStatusText] = useState('Tap microphone and speak crop symptoms...');
+  const [aiResponse, setAiResponse] = useState('');
+  const [statusText, setStatusText] = useState('Tap microphone and speak your problem...');
 
   useEffect(() => {
     if (isOpen) {
       setTranscript('');
-      setDiagnosedDisease(null);
-      setStatusText('Tap microphone and speak crop symptoms in Hindi, Marathi, or English...');
+      setAiResponse('');
+      setStatusText('Tap microphone and speak in Hindi, Marathi, or English...');
+    } else {
+      // Stop speaking if modal closes
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
     }
   }, [isOpen]);
 
@@ -22,15 +31,7 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      // Fallback for browsers without Web Speech API
-      setIsListening(true);
-      setStatusText('Simulating voice input... "Pattiyon par kaale dhabbe hain aur paudha sookh raha hai"');
-      setTimeout(() => {
-        setIsListening(false);
-        const text = 'Pattiyon par kaale dhabbe hain aur paudha sookh raha hai';
-        setTranscript(text);
-        processVoiceDiagnosis(text);
-      }, 2500);
+      alert("Your browser does not support Voice Recognition. Please use Chrome.");
       return;
     }
 
@@ -38,11 +39,14 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = true;
-      recognition.lang = 'hi-IN'; // Default to Hindi/Indian English
+      // Use 'hi-IN' default as it usually auto-detects English and Marathi reasonably well
+      recognition.lang = 'hi-IN';
 
       recognition.onstart = () => {
         setIsListening(true);
-        setStatusText('Listening to your voice... Boliyen (बोलिए)...');
+        setAiResponse('');
+        setTranscript('');
+        setStatusText('Listening... Boliyen (बोलिए)...');
       };
 
       recognition.onresult = (event) => {
@@ -52,48 +56,86 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
         setTranscript(currentTranscript);
       };
 
-      recognition.onerror = () => {
+      recognition.onerror = (e) => {
         setIsListening(false);
-        // Fallback simulation
-        const fallbackText = 'Pattiyon par kaale aur peele dhabbe hain';
-        setTranscript(fallbackText);
-        processVoiceDiagnosis(fallbackText);
+        setStatusText('Error capturing voice. Please try again.');
+        console.error("Speech Recognition Error:", e);
       };
 
       recognition.onend = () => {
         setIsListening(false);
         if (transcript) {
-          processVoiceDiagnosis(transcript);
+          processRealAIDiagnosis(transcript);
         } else {
-          const defaultText = 'Pattiyan peeli pad kar sookh rahi hain';
-          setTranscript(defaultText);
-          processVoiceDiagnosis(defaultText);
+          // If state hasn't updated fast enough, grab from recognition object if possible
+          // Otherwise prompt user again
+          setStatusText('Could not hear clearly. Please tap and try again.');
         }
       };
 
       recognition.start();
     } catch (e) {
       setIsListening(false);
-      const defaultText = 'Crop leaf yellowing and fungal spots';
-      setTranscript(defaultText);
-      processVoiceDiagnosis(defaultText);
+      console.error(e);
+      setStatusText('Microphone access failed.');
     }
   };
 
-  const processVoiceDiagnosis = (text) => {
-    setStatusText('Processing voice symptoms with AI model...');
-    setTimeout(() => {
-      const matched = diseases[Math.floor(Math.random() * diseases.length)];
-      setDiagnosedDisease(matched);
-      setStatusText(`Voice Diagnosis Complete: ${matched.name} (${matched.nameHi})`);
+  const processRealAIDiagnosis = async (text) => {
+    if (!API_KEY) {
+      setStatusText('Please add VITE_GEMINI_API_KEY in .env file to use Real AI!');
+      return;
+    }
+
+    setStatusText('Thinking... (AI is analyzing your problem)');
+    
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       
-      // Text-to-Speech response if supported
+      const prompt = `You are a highly intelligent agricultural expert AI for Indian farmers. 
+      The farmer says: "${text}"
+      
+      Instructions:
+      1. Understand their problem (crop disease, weather, pests, etc.).
+      2. Provide a practical, concise solution (MAXIMUM 2 short sentences).
+      3. CRITICAL: You MUST reply in the EXACT SAME LANGUAGE the farmer used (Hindi, Marathi, or English). If they used Hinglish, reply in Hindi script or Hinglish.
+      4. Return your response as a pure JSON object without markdown formatting, like this:
+      {"reply": "your advice here", "langCode": "hi-IN"} 
+      (Use hi-IN for Hindi, mr-IN for Marathi, en-IN for English).`;
+
+      const result = await model.generateContent(prompt);
+      const responseText = result.response.text().trim();
+      
+      // Clean up markdown code blocks if Gemini returns them
+      const cleanJson = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+      
+      let parsedData;
+      try {
+        parsedData = JSON.parse(cleanJson);
+      } catch (err) {
+        // Fallback if AI didn't return strict JSON
+        parsedData = { reply: cleanJson, langCode: 'hi-IN' };
+      }
+
+      setAiResponse(parsedData.reply);
+      setStatusText('AI Diagnosis Complete!');
+
+      // Text-to-Speech response
       if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(`Bimari pehchani gayi hai: ${matched.nameHi}`);
-        utterance.lang = 'hi-IN';
+        window.speechSynthesis.cancel(); // Stop any ongoing speech
+        const utterance = new SpeechSynthesisUtterance(parsedData.reply);
+        utterance.lang = parsedData.langCode || 'hi-IN';
+        
+        // Slight customization for voice quality
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        
         window.speechSynthesis.speak(utterance);
       }
-    }, 1500);
+    } catch (error) {
+      console.error("AI Error:", error);
+      setStatusText('Error connecting to AI. Please check internet or API Key.');
+    }
   };
 
   if (!isOpen) return null;
@@ -117,10 +159,10 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
         </button>
 
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(139,92,246,0.15)', color: '#a78bfa', padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', marginBottom: '20px' }}>
-          <Sparkles size={14} /> AI VOICE DIAGNOSTIC ASSISTANT
+          <Sparkles size={14} /> REAL AI VOICE ASSISTANT
         </div>
 
-        <h2 style={{ fontSize: '24px', marginBottom: '8px' }}>Awaaz Se Poochein (आवाज से पूछें)</h2>
+        <h2 style={{ fontSize: '24px', marginBottom: '8px' }}>Ask Anything (Voice AI)</h2>
         <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '32px' }}>
           {statusText}
         </p>
@@ -152,7 +194,7 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
         {transcript && (
           <div style={{ background: 'var(--glass)', padding: '16px', borderRadius: '12px', marginBottom: '24px', textAlign: 'left', border: '1px solid var(--glass-border)' }}>
             <div style={{ fontSize: '11px', color: 'var(--accent-cyan)', fontWeight: 'bold', marginBottom: '4px', textTransform: 'uppercase' }}>
-              🎙️ Voice Transcribed:
+              🎙️ You Said:
             </div>
             <div style={{ fontSize: '15px', color: 'var(--text-primary)', fontStyle: 'italic' }}>
               "{transcript}"
@@ -160,27 +202,14 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
           </div>
         )}
 
-        {/* Diagnosed Disease Result */}
-        {diagnosedDisease && (
-          <div className="animate-slide-up" style={{ background: 'rgba(16, 185, 129, 0.15)', padding: '20px', borderRadius: '16px', border: '1px solid var(--primary)', marginBottom: '24px', textAlign: 'left' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#34d399', fontSize: '12px', fontWeight: 'bold', marginBottom: '6px' }}>
-              <Volume2 size={16} /> VOICE AI DIAGNOSIS MATCH:
+        {/* AI Real Response */}
+        {aiResponse && (
+          <div className="animate-slide-up" style={{ background: 'rgba(139, 92, 246, 0.15)', padding: '20px', borderRadius: '16px', border: '1px solid var(--accent-purple)', marginBottom: '24px', textAlign: 'left' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#a78bfa', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px' }}>
+              <Sparkles size={16} /> AI EXPERT ADVICE:
             </div>
-            <h3 style={{ fontSize: '22px', color: 'white', margin: 0 }}>{diagnosedDisease.name} ({diagnosedDisease.nameHi})</h3>
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px', margin: 0 }}>
-              Crop: {diagnosedDisease.crop} | Causative: {diagnosedDisease.cause}
-            </p>
+            <h3 style={{ fontSize: '18px', color: 'white', margin: 0, lineHeight: '1.5' }}>{aiResponse}</h3>
           </div>
-        )}
-
-        {diagnosedDisease ? (
-          <button className="btn btn-primary w-full" onClick={() => { onClose(); navigate('/advisory', { state: { disease: diagnosedDisease } }); }}>
-            Get Voice Advisory Treatments <Sparkles size={16} />
-          </button>
-        ) : (
-          <button className="btn btn-purple w-full" onClick={startListening} disabled={isListening}>
-            {isListening ? 'Listening...' : 'Tap to Speak Symptoms'}
-          </button>
         )}
       </div>
     </div>
