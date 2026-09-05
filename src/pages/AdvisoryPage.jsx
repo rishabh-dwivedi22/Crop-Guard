@@ -178,5 +178,3 @@ const AdvisoryPage = ({ language }) => {
     </div>
   );
 };
-
-export default AdvisoryPage;
