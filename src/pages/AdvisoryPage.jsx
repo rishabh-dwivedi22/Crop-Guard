@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ShieldCheck, Droplet, Sprout, AlertTriangle, FileText, Share2, ArrowLeft, Download, Check } from 'lucide-react';
 import pesticides, { getRecommendation } from '../data/pesticides';
@@ -18,19 +18,19 @@ const AdvisoryPage = ({ language }) => {
 
   const handleShareWhatsApp = () => {
     const rawText = 
-`🌾 *CropGuard IPM Advisory Report*
+`ðŸŒ¾ *CropGuard IPM Advisory Report*
 ----------------------------------------
-📌 *Disease:* ${disease.name} (${disease.nameHi})
-🌱 *Crop:* ${disease.crop}
-🦠 *Pathogen:* ${disease.cause}
+ðŸ“Œ *Disease:* ${disease.name} (${disease.nameHi})
+ðŸŒ± *Crop:* ${disease.crop}
+ðŸ¦  *Pathogen:* ${disease.cause}
 ----------------------------------------
-💊 *Chemical Control:* ${adv.chemical.name}
-🧪 *Dosage:* ${adv.chemical.dosage}
-⏳ *Safety Interval (PHI):* ${adv.chemical.safetyInterval}
+ðŸ’Š *Chemical Control:* ${adv.chemical.name}
+ðŸ§ª *Dosage:* ${adv.chemical.dosage}
+â³ *Safety Interval (PHI):* ${adv.chemical.safetyInterval}
 
-🌿 *Biological Control:* ${adv.biological.name}
+ðŸŒ¿ *Biological Control:* ${adv.biological.name}
 ----------------------------------------
-📱 *Get More Advisories on CropGuard App*`;
+ðŸ“± *Get More Advisories on CropGuard App*`;
 
     const encodedText = encodeURIComponent(rawText);
     const whatsappUrl = `https://wa.me/?text=${encodedText}`;
@@ -60,7 +60,7 @@ const AdvisoryPage = ({ language }) => {
           <button className="btn btn-secondary btn-sm" style={{ marginBottom: '12px' }} onClick={() => navigate(-1)}>
             <ArrowLeft size={14} /> Back
           </button>
-          <h1 className="section-title">Integrated Pest & Disease Management Advisory 🛡️</h1>
+          <h1 className="section-title">Integrated Pest & Disease Management Advisory ðŸ›¡ï¸</h1>
           <p className="section-subtitle">Comprehensive, safe and tailored action plan for Indian farmers & extension staff.</p>
         </div>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -140,12 +140,12 @@ const AdvisoryPage = ({ language }) => {
             <Sprout size={20} /> Eco-Friendly & Organic Control Options
           </h3>
           <div style={{ background: 'var(--glass)', padding: '16px', borderRadius: '12px', marginBottom: '12px' }}>
-            <div style={{ fontWeight: 'bold', fontSize: '15px', color: '#4ade80' }}>🌱 Bio-Agent: {adv.biological.name}</div>
+            <div style={{ fontWeight: 'bold', fontSize: '15px', color: '#4ade80' }}>ðŸŒ± Bio-Agent: {adv.biological.name}</div>
             <div style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '13px' }}>Dosage: {adv.biological.dosage}</div>
             <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Method: {adv.biological.applicationMethod}</div>
           </div>
           <div style={{ background: 'var(--glass)', padding: '16px', borderRadius: '12px' }}>
-            <div style={{ fontWeight: 'bold', fontSize: '15px', color: '#fbbf24' }}>🌿 Organic Formulation: {adv.organic.name}</div>
+            <div style={{ fontWeight: 'bold', fontSize: '15px', color: '#fbbf24' }}>ðŸŒ¿ Organic Formulation: {adv.organic.name}</div>
             <div style={{ color: 'var(--text-secondary)', marginTop: '4px', fontSize: '13px' }}>Dosage: {adv.organic.dosage}</div>
           </div>
         </div>
@@ -155,7 +155,7 @@ const AdvisoryPage = ({ language }) => {
       <div className="grid-2" style={{ marginBottom: '24px' }}>
         <div className="glass-card" style={{ padding: '24px' }}>
           <h3 style={{ fontSize: '18px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            🌾 Cultural & Field Sanitation Practices
+            ðŸŒ¾ Cultural & Field Sanitation Practices
           </h3>
           <ul style={{ paddingLeft: '20px', lineHeight: '1.8', fontSize: '14px', color: 'var(--text-secondary)' }}>
             {adv.cultural.map((item, idx) => (
@@ -178,3 +178,6 @@ const AdvisoryPage = ({ language }) => {
     </div>
   );
 };
+export default AdvisoryPage;
+
+
