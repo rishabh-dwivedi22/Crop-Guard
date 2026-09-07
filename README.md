@@ -26,5 +26,3 @@
 3. Run `npm run dev`
 4. Open `http://localhost:5173` in your browser
 
----
-*Built with ❤️ by Team Night Coders*
