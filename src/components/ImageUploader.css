@@ -20,7 +20,7 @@
   transition: all 0.35s ease;
   overflow: hidden;
 }
-
+ 
 .upload-zone::before {
   content: '';
   position: absolute;
