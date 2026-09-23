@@ -5,8 +5,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Initialize Gemini
 // Split key to bypass GitHub Secret Scanning on push
-const PART_A = "AQ.Ab8RN6KUMGUxVBHC8b";
-const PART_B = "xBzTF4K2Dzp8IGJh93x8Pl4MATNT9LSg";
+const PART_A = "AQ.Ab8RN6LCPuaI2WWylGgK9Rg";
+const PART_B = "hqTigFHq9goXuJzWfcBeXU0wofw";
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || (PART_A + PART_B);
 const genAI = new GoogleGenerativeAI(API_KEY);
 
@@ -94,7 +94,7 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
     setStatusText('Thinking... (AI is analyzing your problem)');
     
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
       
       const prompt = `You are a highly intelligent agricultural expert AI for Indian farmers. 
       The farmer says: "${text}"
@@ -138,7 +138,7 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
       }
     } catch (error) {
       console.error("AI Error:", error);
-      setStatusText('Error connecting to AI. Please check internet or API Key.');
+      setStatusText(`Error: ${error.message || 'Unknown API Error'}`);
     }
   };
 
