@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Volume2, X, Sparkles, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -13,14 +13,15 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
   const [transcript, setTranscript] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [statusText, setStatusText] = useState('Tap microphone and speak your problem...');
+  const transcriptRef = useRef('');
 
   useEffect(() => {
     if (isOpen) {
       setTranscript('');
       setAiResponse('');
+      transcriptRef.current = '';
       setStatusText('Tap microphone and speak in Hindi, Marathi, or English...');
     } else {
-      // Stop speaking if modal closes
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
@@ -36,24 +37,26 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
     }
 
     try {
+      transcriptRef.current = '';
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = true;
-      // Use 'hi-IN' default as it usually auto-detects English and Marathi reasonably well
       recognition.lang = 'hi-IN';
 
       recognition.onstart = () => {
         setIsListening(true);
         setAiResponse('');
         setTranscript('');
+        transcriptRef.current = '';
         setStatusText('Listening... Boliyen (बोलिए)...');
       };
 
       recognition.onresult = (event) => {
-        const currentTranscript = Array.from(event.results)
+        const text = Array.from(event.results)
           .map(result => result[0].transcript)
           .join('');
-        setTranscript(currentTranscript);
+        transcriptRef.current = text;
+        setTranscript(text);
       };
 
       recognition.onerror = (e) => {
@@ -64,11 +67,9 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
 
       recognition.onend = () => {
         setIsListening(false);
-        if (transcript) {
-          processRealAIDiagnosis(transcript);
+        if (transcriptRef.current) {
+          processRealAIDiagnosis(transcriptRef.current);
         } else {
-          // If state hasn't updated fast enough, grab from recognition object if possible
-          // Otherwise prompt user again
           setStatusText('Could not hear clearly. Please tap and try again.');
         }
       };
