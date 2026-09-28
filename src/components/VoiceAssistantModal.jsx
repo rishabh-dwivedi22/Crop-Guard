@@ -94,7 +94,7 @@ const VoiceAssistantModal = ({ isOpen, onClose }) => {
     setStatusText('Thinking... (AI is analyzing your problem)');
     
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
       
       const prompt = `You are a highly intelligent agricultural expert AI for Indian farmers. 
       The farmer says: "${text}"
